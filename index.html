@@ -552,13 +552,19 @@
             </a>
           </div>
           <div class="flex-1">
-            <p class="uppercase text-gray-500 md:mb-6">Liên kết</p>
+             <p class="uppercase text-gray-500 md:mb-6">Liên kết</p>
             <ul class="list-reset mb-6">
               <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Về chúng tôi</a>
+                 <a href="#about" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Về chúng tôi</a>
               </li>
               <li class="mt-2 inline-block mr-2 md:block md:mr-0">
-                <a href="#" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Liên hệ</a>
+                 <a href="#videos" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Video nổi bật</a>
+              </li>
+              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                 <a href="#contact" class="no-underline hover:underline text-gray-800 hover:text-pink-500">Liên hệ</a>
+              </li>
+              <li class="mt-2 inline-block mr-2 md:block md:mr-0">
+                 <a href="https://www.tiktok.com/@ayo.vietnam" target="_blank" class="no-underline hover:underline text-gray-800 hover:text-pink-500">TikTok</a>
               </li>
             </ul>
           </div>
@@ -622,6 +628,11 @@
             logoWhite.style.display = "none";
             logoRed.style.display = "inline";
           }
+           // Đảm bảo brandname text cũng chuyển màu
+           if (brandname) {
+             brandname.classList.add("text-gray-800");
+             brandname.classList.remove("text-white");
+           }
         } else {
           header.classList.remove("bg-white");
           navaction.classList.remove("gradient");
@@ -642,6 +653,11 @@
             logoWhite.style.display = "inline";
             logoRed.style.display = "none";
           }
+           // Đảm bảo brandname text cũng chuyển màu
+           if (brandname) {
+             brandname.classList.add("text-white");
+             brandname.classList.remove("text-gray-800");
+           }
         }
       });
     </script>
@@ -818,6 +834,6 @@
        document.addEventListener('DOMContentLoaded', function() {
          handleMobileVideoAutoplay();
        });
-     </script>
+    </script>
   </body>
 </html>
