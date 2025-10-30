@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(mod => mod.default(...args));
 const nodemailer = require('nodemailer');
 
 module.exports = async (req, res) => {
