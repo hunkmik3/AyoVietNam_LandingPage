@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AYO Vietnam - Admin Panel</title>
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body { font-family: 'Montserrat', sans-serif; }
+        .gradient { background: linear-gradient(90deg, #d53369 0%, #daae51 100%); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="gradient text-white py-6">
+        <div class="container mx-auto px-6">
+            <h1 class="text-3xl font-bold">AYO Vietnam - Admin Panel</h1>
+            <p class="text-lg opacity-90">Quản lý email và người đăng ký</p>
+        </div>
+    </header>
+
+    <div id="login-section" class="container mx-auto px-6 py-12 max-w-md">
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 text-center">Đăng nhập quản trị</h2>
+            <form id="login-form">
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-lg font-bold mb-2" for="admin-password">
+                        Mật khẩu quản trị
+                    </label>
+                    <input type="password" id="admin-password" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" required placeholder="Nhập mật khẩu..." autocomplete="current-password" />
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold py-3 px-8 rounded-lg focus:outline-none focus:shadow-outline hover:from-pink-600 hover:to-orange-600 transition duration-200">
+                    Đăng nhập
+                </button>
+                <div id="login-error" class="text-red-600 text-center mt-4 hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-main" class="hidden container mx-auto px-6 py-8">
+        <div class="flex justify-between mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Quản trị subscribers</h2>
+            <button id="logout-btn" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-pink-400 duration-150">Đăng xuất</button>
+        </div>
+        <!-- Danh sách người đăng ký -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">Danh sách người đăng ký (<span id="count"></span> người)</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-3 py-2 text-left">#</th>
+                            <th class="px-3 py-2 text-left">Họ tên</th>
+                            <th class="px-3 py-2 text-left">Email</th>
+                            <th class="px-3 py-2 text-left">Số điện thoại</th>
+                            <th class="px-3 py-2 text-left">Thời gian</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscribers-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Gửi email hàng loạt -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-xl font-bold mb-4">Gửi email đến tất cả subscribers</h3>
+            <form id="bulk-email-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Chủ đề *</label>
+                    <input type="text" id="email-subject" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Nhập chủ đề email">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Nội dung HTML *</label>
+                    <textarea id="email-content" required rows="8" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" placeholder="Nhập nội dung email... có thể dùng HTML"></textarea>
+                </div>
+                <button type="submit" id="send-btn" class="bg-gradient-to-r from-pink-500 to-orange-500 text-white font-bold py-3 px-8 rounded-lg focus:outline-none transition hover:from-pink-600 hover:to-orange-600 mr-4">Gửi tất cả</button>
+                <button type="button" id="preview-btn" class="bg-gray-400 text-white font-bold py-3 px-8 rounded-lg focus:outline-none transition hover:bg-gray-600">Xem trước</button>
+            </form>
+            <div id="notification" class="mt-4 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+    let adminPass = '';
+
+    // Hiển thị thông báo
+    function showNotification(type, message) {
+        const notif = document.getElementById('notification');
+        notif.className = 'mt-4 p-4 rounded-lg text-center';
+        notif.classList.remove('hidden');
+        if(type === 'success') {
+            notif.classList.add('bg-green-100','text-green-700','border','border-green-400');
+            notif.classList.remove('bg-red-100','text-red-700','border-red-400');
+        } else {
+            notif.classList.add('bg-red-100','text-red-700','border','border-red-400');
+            notif.classList.remove('bg-green-100','text-green-700','border-green-400');
+        }
+        notif.textContent = message;
+        setTimeout(() => notif.classList.add('hidden'), 5000);
+    }
+
+    // Đăng nhập
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('admin-password').value;
+        // Thử fetch subscribers (nếu pass đúng)
+        try {
+            const res = await fetch('api/subscribers.js', {
+                headers: { 'Authorization': pass }
+            });
+            const data = await res.json();
+            if(res.ok) {
+                adminPass = pass;
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-main').classList.remove('hidden');
+                loadSubscribers(data);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+                document.getElementById('login-error').textContent = 'Sai mật khẩu';
+            }
+        } catch {
+            document.getElementById('login-error').classList.remove('hidden');
+            document.getElementById('login-error').textContent = 'Không kết nối được server';
+        }
+    });
+
+    // Đăng xuất
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        adminPass = '';
+        document.getElementById('admin-main').classList.add('hidden');
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('admin-password').value = '';
+    });
+
+    // Hiện danh sách subscribers
+    function loadSubscribers(data) {
+        document.getElementById('count').textContent = data.count;
+        let html = '';
+        if (data.count === 0) {
+            html = `<tr><td colspan="5" class="text-center py-4 text-gray-500">Chưa có đăng ký nào</td></tr>`;
+        } else {
+            html = data.subscribers.map((sub, i) => `
+            <tr class="border-b">
+                <td class="px-3 py-2">${i + 1}</td>
+                <td class="px-3 py-2">${sub.name}</td>
+                <td class="px-3 py-2">${sub.email}</td>
+                <td class="px-3 py-2">${sub.phone || ''}</td>
+                <td class="px-3 py-2">${new Date(sub.createdAt).toLocaleString('vi-VN')}</td>
+            </tr>`).join('');
+        }
+        document.getElementById('subscribers-list').innerHTML = html;
+    }
+
+    // Preview nội dung email
+    document.getElementById('preview-btn').addEventListener('click', function() {
+        const subject = document.getElementById('email-subject').value.trim();
+        const content = document.getElementById('email-content').value.trim();
+        if (!subject || !content) {
+            showNotification('error', 'Vui lòng nhập đầy đủ Subject và Nội dung!');
+            return;
+        }
+        // Thay thế \n thành <br/> cho hiển thị preview
+        const htmlContent = content.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+        const wrap = document.createElement('div');
+        wrap.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+        wrap.innerHTML = `
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full relative">
+            <h4 class="text-lg font-bold mb-2">Chủ đề: ${subject}</h4>
+            <div class="max-h-80 overflow-y-auto border p-4">${htmlContent}</div>
+            <button onclick="this.closest('.fixed').remove()" class="absolute top-0 right-0 mt-5 mr-5 bg-gray-400 px-4 py-2 rounded text-white">Đóng</button>
+        </div>`;
+        document.body.appendChild(wrap);
+    });
+
+    // Khi gửi email, nếu người dùng nhập text thường sẽ tự chuyển \n sang <br/>
+    document.getElementById('bulk-email-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('send-btn');
+        btn.disabled = true;
+        btn.textContent = 'Đang gửi...';
+        const subject = document.getElementById('email-subject').value.trim();
+        let html = document.getElementById('email-content').value.trim();
+        // Nếu user chỉ nhập text (không có tag html), chuyển \n thành <br/>
+        if (!/<.+?>/g.test(html)) {
+            html = html.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+        }
+        try {
+            const res = await fetch('/api/send-newsletter.js', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': adminPass
+                },
+                body: JSON.stringify({ subject, html })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                showNotification('success', `Gửi thành công ${data.sent} email. ${data.error ? 'Lỗi ' + data.error + ' email.' : ''}`);
+            } else {
+                showNotification('error', data.error || 'Gửi thất bại');
+            }
+        } catch {
+            showNotification('error', 'Không gửi được email.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Gửi tất cả';
+    });
+
+    </script>
+</body>
+</html>

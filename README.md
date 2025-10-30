@@ -90,3 +90,24 @@ Chỉnh sửa gradient trong file `index.html`:
 ---
 
 Được phát triển với ❤️ bởi AYO Vietnam Team
+
+---
+
+## 📧 Cấu hình gửi mail Brevo qua SMTP (AYO Vietnam)
+
+Thêm file `.env` với nội dung sau (hoặc cập nhật `.env.example`):
+
+```
+SMTP_USER=9a469c001@smtp-brevo.com
+SMTP_PASS=your-brevo-smtp-key-here
+FROM_EMAIL=ayo.vietnam@yourdomain.com
+ADMIN_EMAIL=your-admin@domain.com
+LEADS_WEBHOOK_URL=https://your-webhook-url (optional)
+```
+- Lấy `SMTP_USER` là email đăng nhập Brevo của bạn
+- `SMTP_PASS` là SMTP key do Brevo cung cấp (dạng `xsmtpsib-...`)
+- `FROM_EMAIL` là địa chỉ sẽ hiển thị là người gửi (nên khớp Brevo verify)
+- `ADMIN_EMAIL` là email nội bộ nhận thông báo lead mới
+- `LEADS_WEBHOOK_URL` tuỳ chọn nếu có webhook nhận thông tin đăng ký (convert lead)
+
+> Nếu không nhận được mail, kiểm tra lại key SMTP và email, hoặc thử gửi test ở https://www.smtper.net/ để kiểm tra cấu hình Brevo còn hoạt động.

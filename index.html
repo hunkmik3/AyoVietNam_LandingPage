@@ -37,6 +37,8 @@
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/>
     <!--Replace with your tailwind.css once created-->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <!-- Define your gradient here - use online tools to find a gradient matching your branding-->
     <style>
       .gradient {
@@ -266,6 +268,25 @@
           object-fit: cover;
         }
       }
+      
+      /* Header scroll styles */
+      .header-scrolled {
+        background-color: white !important;
+        color: #374151 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      
+      .header-scrolled #brandname {
+        color: #374151 !important;
+      }
+      
+      .header-scrolled .nav-link {
+        color: #374151 !important;
+      }
+      
+      .header-scrolled .nav-link:hover {
+        color: #ec4899 !important;
+      }
     </style>
   </head>
   <body class="leading-normal tracking-normal text-white gradient" style="font-family: 'Montserrat', sans-serif;">
@@ -273,7 +294,7 @@
     <nav id="header" class="fixed w-full z-30 top-0 text-white">
       <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
         <div class="pl-4 flex items-center">
-          <a class="toggleColour text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl flex items-center" href="#" id="brandname">
+          <a class="text-white no-underline hover:no-underline font-bold text-2xl lg:text-4xl flex items-center" href="#" id="brandname">
             <!-- Logo trắng (hiển thị khi ở đầu trang) -->
             <img id="logo-white" class="h-12 w-auto" src="logo-white.png" alt="Logo" style="display: inline;" />
             <!-- Logo đỏ (hiển thị khi scroll) -->
@@ -292,13 +313,13 @@
         <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden mt-2 lg:mt-0 bg-white lg:bg-transparent text-black p-4 lg:p-0 z-20" id="nav-content">
           <ul class="list-reset lg:flex justify-end flex-1 items-center">
             <li class="mr-3">
-               <a class="inline-block py-2 px-4 text-black font-bold no-underline hover:text-pink-500 transition-colors duration-300" href="#about">Về chúng tôi</a>
+               <a class="nav-link inline-block py-2 px-4 text-white font-bold no-underline hover:text-pink-500 transition-colors duration-300" href="#about">Về chúng tôi</a>
             </li>
             <li class="mr-3">
-               <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4 transition-colors duration-300" href="#videos">Video nổi bật</a>
+               <a class="nav-link inline-block text-white no-underline hover:text-gray-300 hover:text-underline py-2 px-4 transition-colors duration-300" href="#videos">Video nổi bật</a>
             </li>
             <li class="mr-3">
-               <a class="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4 transition-colors duration-300" href="#contact">Liên hệ</a>
+               <a class="nav-link inline-block text-white no-underline hover:text-gray-300 hover:text-underline py-2 px-4 transition-colors duration-300" href="#contact">Liên hệ</a>
             </li>
           </ul>
            <a
@@ -369,7 +390,7 @@
         <!-- Video Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <!-- Video 1 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7564400065440271623" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 1 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata" poster="videos/video1-poster.jpg">
@@ -384,10 +405,10 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Team trai vs team gái – ai win đây?? 👀</h3>
             </div>
-          </div>
+          </a>
           
           <!-- Video 2 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7564058591548804359" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 2 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
@@ -402,10 +423,10 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Giữ chắc 100k hay liều với Mystery Box? 👀</h3>
             </div>
-          </div>
+          </a>
           
           <!-- Video 3 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7563660167116557586" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 3 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
@@ -420,10 +441,10 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Bạn sẽ chọn cái nào?</h3>
             </div>
-          </div>
+          </a>
           
           <!-- Video 4 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7563288773455334664" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 4 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
@@ -438,10 +459,10 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Người hào phóng nhất mà bạn biết là ai?</h3>
             </div>
-          </div>
+          </a>
           
           <!-- Video 5 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7562169736763542802" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 5 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
@@ -456,10 +477,10 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Cold world 🌎 🥶</h3>
             </div>
-          </div>
+          </a>
           
           <!-- Video 6 -->
-          <div class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift">
+          <a href="https://www.tiktok.com/@ayo.vietnam/video/7561804184975101191" target="_blank" class="video-thumbnail relative group cursor-pointer scroll-animate video-hover hover-lift block">
             <div class="aspect-[9/16] bg-gray-300 rounded-xl overflow-hidden shadow-2xl">
               <!-- Video 6 -->
               <video class="w-full h-full object-cover" autoplay muted loop playsinline preload="metadata">
@@ -474,7 +495,7 @@
             <div class="mt-4 text-center">
               <h3 class="text-lg font-bold text-gray-800 leading-tight hover-scale">Bạn cũng là fan của Taylor Swift à?</h3>
             </div>
-          </div>
+          </a>
         </div>
         
         <!-- View More Button -->
@@ -496,7 +517,7 @@
         </div>
         <div class="flex flex-wrap justify-center scroll-animate">
           <div class="w-full max-w-2xl">
-            <form class="bg-white shadow-2xl rounded-2xl p-12 hover-lift">
+            <form id="contact-form" class="bg-white shadow-2xl rounded-2xl p-12 hover-lift">
               <div class="mb-8">
                 <label for="name" class="block text-gray-700 text-lg font-bold mb-3">
                   Họ và tên *
@@ -534,6 +555,25 @@
               <p class="text-base text-gray-600 text-center mt-6">
                 Bằng cách đăng ký, bạn đồng ý nhận email thông báo về những tin tức mới nhất từ AYO Vietnam
               </p>
+              
+              <!-- Success/Error Messages -->
+              <div id="success-message" class="hidden mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  Cảm ơn bạn! Chúng tôi đã nhận được thông tin của bạn và sẽ gửi email xác nhận sớm nhất.
+                </div>
+              </div>
+              
+              <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                  </svg>
+                  Có lỗi xảy ra khi gửi thông tin. Vui lòng thử lại sau.
+                </div>
+              </div>
             </form>
           </div>
         </div>
@@ -601,63 +641,27 @@
       var navcontent = document.getElementById("nav-content");
       var navaction = document.getElementById("navAction");
       var brandname = document.getElementById("brandname");
-      var toToggle = document.querySelectorAll(".toggleColour");
       var logoWhite = document.getElementById("logo-white");
       var logoRed = document.getElementById("logo-red");
 
       document.addEventListener("scroll", function () {
-        /*Apply classes for slide in bar*/
         scrollpos = window.scrollY;
 
         if (scrollpos > 10) {
-          header.classList.add("bg-white");
-          navaction.classList.remove("bg-white");
-          navaction.classList.add("gradient");
-          navaction.classList.remove("text-gray-800");
-          navaction.classList.add("text-white");
-          //Use to switch toggleColour colours
-          for (var i = 0; i < toToggle.length; i++) {
-            toToggle[i].classList.add("text-gray-800");
-            toToggle[i].classList.remove("text-white");
-          }
-          header.classList.add("shadow");
-          navcontent.classList.remove("bg-gray-100");
-          navcontent.classList.add("bg-white");
-          // Chuyển đổi logo: ẩn logo trắng, hiện logo đỏ
-          if (logoWhite && logoRed) {
-            logoWhite.style.display = "none";
-            logoRed.style.display = "inline";
-          }
-           // Đảm bảo brandname text cũng chuyển màu
-           if (brandname) {
-             brandname.classList.add("text-gray-800");
-             brandname.classList.remove("text-white");
-           }
+           // Khi scroll xuống - thêm class header-scrolled
+           header.classList.add("header-scrolled");
+           
+           // Logo switching
+           if (logoWhite) logoWhite.style.display = "none";
+           if (logoRed) logoRed.style.display = "inline";
+           
         } else {
-          header.classList.remove("bg-white");
-          navaction.classList.remove("gradient");
-          navaction.classList.add("bg-white");
-          navaction.classList.remove("text-white");
-          navaction.classList.add("text-gray-800");
-          //Use to switch toggleColour colours
-          for (var i = 0; i < toToggle.length; i++) {
-            toToggle[i].classList.add("text-white");
-            toToggle[i].classList.remove("text-gray-800");
-          }
-
-          header.classList.remove("shadow");
-          navcontent.classList.remove("bg-white");
-          navcontent.classList.add("bg-gray-100");
-          // Chuyển đổi logo: hiện logo trắng, ẩn logo đỏ
-          if (logoWhite && logoRed) {
-            logoWhite.style.display = "inline";
-            logoRed.style.display = "none";
-          }
-           // Đảm bảo brandname text cũng chuyển màu
-           if (brandname) {
-             brandname.classList.add("text-white");
-             brandname.classList.remove("text-gray-800");
-           }
+           // Khi ở đầu trang - xóa class header-scrolled
+           header.classList.remove("header-scrolled");
+           
+           // Logo switching
+           if (logoWhite) logoWhite.style.display = "inline";
+           if (logoRed) logoRed.style.display = "none";
         }
       });
     </script>
@@ -834,6 +838,48 @@
        document.addEventListener('DOMContentLoaded', function() {
          handleMobileVideoAutoplay();
        });
+       
+       // Form submit -> call serverless email API
+       (function() {
+         document.getElementById('contact-form').addEventListener('submit', async function(event) {
+           event.preventDefault();
+           const form = this;
+           const submitBtn = form.querySelector('button[type="submit"]');
+           const successMsg = document.getElementById('success-message');
+           const errorMsg = document.getElementById('error-message');
+           successMsg.classList.add('hidden');
+           errorMsg.classList.add('hidden');
+           const originalText = submitBtn.textContent;
+           submitBtn.textContent = 'Đang gửi...';
+           submitBtn.disabled = true;
+
+           const payload = {
+             name: document.getElementById('name').value.trim(),
+             email: document.getElementById('email').value.trim(),
+             phone: document.getElementById('phone').value.trim()
+           };
+
+           try {
+             const resp = await fetch('/api/subscribe', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify(payload)
+             });
+
+             if (!resp.ok) throw new Error('Request failed');
+
+             successMsg.classList.remove('hidden');
+             form.reset();
+             successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           } catch (e) {
+             errorMsg.classList.remove('hidden');
+             errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           } finally {
+             submitBtn.textContent = originalText;
+             submitBtn.disabled = false;
+           }
+         });
+       })();
     </script>
   </body>
 </html>
