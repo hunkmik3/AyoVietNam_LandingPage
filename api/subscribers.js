@@ -10,7 +10,9 @@ module.exports = (req, res) => {
   if (!ADMIN_SECRET || authHeader !== ADMIN_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  const subscribersFile = path.resolve(__dirname, '../subscribers.json');
+  const subscribersFile = process.env.VERCEL === '1'
+    ? '/tmp/subscribers.json'
+    : path.resolve(__dirname, '../subscribers.json');
   let list = [];
   if (fs.existsSync(subscribersFile)) {
     try {

@@ -94,11 +94,13 @@ module.exports = async (req, res) => {
       sendSMTPMail(adminMail)
     ]);
 
-    // Sau khi gửi mail thành công, lưu vào subscribers.json
+    // Sau khi gửi mail thành công, lưu vào subscribers.json (ghi /tmp nếu trên Vercel)
     try {
       const fs = require('fs');
       const path = require('path');
-      const subscribersFile = path.resolve(__dirname, '../subscribers.json');
+      const subscribersFile = process.env.VERCEL === '1'
+        ? '/tmp/subscribers.json'
+        : path.resolve(__dirname, '../subscribers.json');
       let list = [];
       if (fs.existsSync(subscribersFile)) {
         try {

@@ -27,7 +27,9 @@ module.exports = async (req, res) => {
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
   // Read subscribers
-  const subscribersFile = path.resolve(__dirname, '../subscribers.json');
+  const subscribersFile = process.env.VERCEL === '1'
+    ? '/tmp/subscribers.json'
+    : path.resolve(__dirname, '../subscribers.json');
   if (!fs.existsSync(subscribersFile)) {
     return res.status(400).json({ error: 'Chưa có ai đăng ký!' });
   }
