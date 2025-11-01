@@ -43,6 +43,30 @@
             <h2 class="text-2xl font-bold text-gray-800">Quản trị subscribers</h2>
             <button id="logout-btn" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-pink-400 duration-150">Đăng xuất</button>
         </div>
+        
+        <!-- Thống kê -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">Thống kê</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gradient-to-r from-pink-500 to-orange-500 text-white p-4 rounded-lg">
+                    <div class="text-sm opacity-90">Tổng số</div>
+                    <div class="text-3xl font-bold" id="stat-total">0</div>
+                </div>
+                <div class="bg-blue-500 text-white p-4 rounded-lg">
+                    <div class="text-sm opacity-90">Hôm nay</div>
+                    <div class="text-3xl font-bold" id="stat-today">0</div>
+                </div>
+                <div class="bg-green-500 text-white p-4 rounded-lg">
+                    <div class="text-sm opacity-90">7 ngày qua</div>
+                    <div class="text-3xl font-bold" id="stat-last7">0</div>
+                </div>
+                <div class="bg-purple-500 text-white p-4 rounded-lg">
+                    <div class="text-sm opacity-90">30 ngày qua</div>
+                    <div class="text-3xl font-bold" id="stat-last30">0</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Danh sách người đăng ký -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
             <h3 class="text-xl font-bold mb-4">Danh sách người đăng ký (<span id="count"></span> người)</h3>
@@ -55,6 +79,7 @@
                             <th class="px-3 py-2 text-left">Email</th>
                             <th class="px-3 py-2 text-left">Số điện thoại</th>
                             <th class="px-3 py-2 text-left">Thời gian</th>
+                            <th class="px-3 py-2 text-left">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="subscribers-list"></tbody>
@@ -105,7 +130,7 @@
         const pass = document.getElementById('admin-password').value;
         // Thử fetch subscribers (nếu pass đúng)
         try {
-            const res = await fetch('api/subscribers.js', {
+            const res = await fetch('/api/subscribers.js', {
                 headers: { 'Authorization': pass }
             });
             const data = await res.json();
@@ -135,20 +160,67 @@
     // Hiện danh sách subscribers
     function loadSubscribers(data) {
         document.getElementById('count').textContent = data.count;
+        
+        // Hiển thị thống kê
+        if (data.stats) {
+            document.getElementById('stat-total').textContent = data.stats.total || 0;
+            document.getElementById('stat-today').textContent = data.stats.today || 0;
+            document.getElementById('stat-last7').textContent = data.stats.last7Days || 0;
+            document.getElementById('stat-last30').textContent = data.stats.last30Days || 0;
+        }
+        
         let html = '';
         if (data.count === 0) {
-            html = `<tr><td colspan="5" class="text-center py-4 text-gray-500">Chưa có đăng ký nào</td></tr>`;
+            html = `<tr><td colspan="6" class="text-center py-4 text-gray-500">Chưa có đăng ký nào</td></tr>`;
         } else {
             html = data.subscribers.map((sub, i) => `
-            <tr class="border-b">
+            <tr class="border-b" id="row-${sub.email.replace('@', '_at_')}">
                 <td class="px-3 py-2">${i + 1}</td>
                 <td class="px-3 py-2">${sub.name}</td>
                 <td class="px-3 py-2">${sub.email}</td>
                 <td class="px-3 py-2">${sub.phone || ''}</td>
                 <td class="px-3 py-2">${new Date(sub.createdAt).toLocaleString('vi-VN')}</td>
+                <td class="px-3 py-2">
+                    <button onclick="deleteSubscriber('${sub.email}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">Xóa</button>
+                </td>
             </tr>`).join('');
         }
         document.getElementById('subscribers-list').innerHTML = html;
+    }
+    
+    // Xóa subscriber
+    async function deleteSubscriber(email) {
+        if (!confirm(`Bạn có chắc chắn muốn xóa subscriber: ${email}?`)) {
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/delete-subscriber.js', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': adminPass
+                },
+                body: JSON.stringify({ email })
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                showNotification('success', 'Đã xóa subscriber thành công');
+                // Reload danh sách
+                const res2 = await fetch('/api/subscribers.js', {
+                    headers: { 'Authorization': adminPass }
+                });
+                const data2 = await res2.json();
+                if (res2.ok) {
+                    loadSubscribers(data2);
+                }
+            } else {
+                showNotification('error', data.error || 'Không thể xóa subscriber');
+            }
+        } catch (e) {
+            showNotification('error', 'Lỗi khi xóa subscriber');
+        }
     }
 
     // Preview nội dung email
