@@ -98,20 +98,39 @@ module.exports = async (req, res) => {
     // Sau khi gửi mail thành công, lưu vào Google Sheets
     try {
       const { GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT } = process.env;
-      if (GOOGLE_SHEET_ID && GOOGLE_SERVICE_ACCOUNT) {
-        const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+      if (!GOOGLE_SHEET_ID || !GOOGLE_SERVICE_ACCOUNT) {
+        console.warn('Google Sheets not configured: GOOGLE_SHEET_ID or GOOGLE_SERVICE_ACCOUNT missing');
+      } else {
+        let credentials;
+        try {
+          credentials = typeof GOOGLE_SERVICE_ACCOUNT === 'string' 
+            ? JSON.parse(GOOGLE_SERVICE_ACCOUNT) 
+            : GOOGLE_SERVICE_ACCOUNT;
+        } catch (parseErr) {
+          console.error('Failed to parse GOOGLE_SERVICE_ACCOUNT:', parseErr);
+          throw parseErr;
+        }
+        
         const auth = new google.auth.GoogleAuth({
           credentials,
           scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
         const sheets = google.sheets({ version: 'v4', auth });
+        
         // Kiểm tra email đã tồn tại chưa
-        const existingData = await sheets.spreadsheets.values.get({
-          spreadsheetId: GOOGLE_SHEET_ID,
-          range: 'A2:D', // Bỏ qua header row
-        });
-        const rows = existingData.data.values || [];
-        const emailExists = rows.some(row => row[1] === email); // Cột B là Email
+        let rows = [];
+        try {
+          const existingData = await sheets.spreadsheets.values.get({
+            spreadsheetId: GOOGLE_SHEET_ID,
+            range: 'A2:D', // Bỏ qua header row
+          });
+          rows = existingData.data.values || [];
+        } catch (readErr) {
+          console.error('Error reading existing data:', readErr);
+          // Tiếp tục thêm dòng mới nếu không đọc được
+        }
+        
+        const emailExists = rows.some(row => row && row[1] && row[1] === email);
         if (!emailExists) {
           // Thêm dòng mới
           await sheets.spreadsheets.values.append({
@@ -127,11 +146,15 @@ module.exports = async (req, res) => {
               ]],
             },
           });
+          console.log('Successfully added subscriber to Google Sheets:', email);
+        } else {
+          console.log('Email already exists in sheet:', email);
         }
       }
     } catch (e) {
-      // Không chặn đăng ký nếu chỉ lỗi ghi log
+      // Không chặn đăng ký nếu chỉ lỗi ghi log, nhưng log chi tiết để debug
       console.error('SAVE SUBSCRIBER TO SHEETS ERROR:', e);
+      console.error('Error details:', e.message, e.stack);
     }
 
     // Gọi webhook lưu lead (tuỳ chọn)
