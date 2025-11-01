@@ -1,6 +1,5 @@
-const fs = require('fs');
-const path = require('path');
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -26,19 +25,42 @@ module.exports = async (req, res) => {
     secure: false,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
   });
-  // Read subscribers
-  const subscribersFile = process.env.VERCEL === '1'
-    ? '/tmp/subscribers.json'
-    : path.resolve(__dirname, '../subscribers.json');
-  if (!fs.existsSync(subscribersFile)) {
-    return res.status(400).json({ error: 'Chưa có ai đăng ký!' });
+  // Read subscribers from Google Sheets
+  const { GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT } = process.env;
+  if (!GOOGLE_SHEET_ID || !GOOGLE_SERVICE_ACCOUNT) {
+    return res.status(400).json({ error: 'Chưa cấu hình Google Sheets!' });
   }
-  let list;
+  
+  let list = [];
   try {
-    list = JSON.parse(fs.readFileSync(subscribersFile, 'utf8'));
+    const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const sheets = google.sheets({ version: 'v4', auth });
+    
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: GOOGLE_SHEET_ID,
+      range: 'A2:D', // Bỏ qua header row
+    });
+    
+    const rows = response.data.values || [];
+    list = rows.map(row => ({
+      name: row[0] || '',
+      email: row[1] || '',
+      phone: row[2] || '',
+      createdAt: row[3] || new Date().toISOString()
+    }));
+    
+    if (list.length === 0) {
+      return res.status(400).json({ error: 'Chưa có ai đăng ký!' });
+    }
   } catch (e) {
-    return res.status(500).json({ error: 'Lỗi đọc subscribers' });
+    console.error('READ SUBSCRIBERS ERROR:', e);
+    return res.status(500).json({ error: 'Lỗi đọc subscribers từ Google Sheets' });
   }
+  
   let sent = 0, error = 0, errors = [];
   for (const user of list) {
     try {

@@ -1,5 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(mod => mod.default(...args));
 const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -94,32 +95,43 @@ module.exports = async (req, res) => {
       sendSMTPMail(adminMail)
     ]);
 
-    // Sau khi gửi mail thành công, lưu vào subscribers.json (ghi /tmp nếu trên Vercel)
+    // Sau khi gửi mail thành công, lưu vào Google Sheets
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const subscribersFile = process.env.VERCEL === '1'
-        ? '/tmp/subscribers.json'
-        : path.resolve(__dirname, '../subscribers.json');
-      let list = [];
-      if (fs.existsSync(subscribersFile)) {
-        try {
-          list = JSON.parse(fs.readFileSync(subscribersFile, 'utf8'));
-        } catch (e) { list = []; }
-      }
-      // Chỉ thêm nếu chưa có email này (tránh duplicate)
-      if (!list.find(item => item.email === email)) {
-        list.push({
-          name,
-          email,
-          phone,
-          createdAt: new Date().toISOString()
+      const { GOOGLE_SHEET_ID, GOOGLE_SERVICE_ACCOUNT } = process.env;
+      if (GOOGLE_SHEET_ID && GOOGLE_SERVICE_ACCOUNT) {
+        const credentials = JSON.parse(GOOGLE_SERVICE_ACCOUNT);
+        const auth = new google.auth.GoogleAuth({
+          credentials,
+          scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
-        fs.writeFileSync(subscribersFile, JSON.stringify(list, null, 2));
+        const sheets = google.sheets({ version: 'v4', auth });
+        // Kiểm tra email đã tồn tại chưa
+        const existingData = await sheets.spreadsheets.values.get({
+          spreadsheetId: GOOGLE_SHEET_ID,
+          range: 'A2:D', // Bỏ qua header row
+        });
+        const rows = existingData.data.values || [];
+        const emailExists = rows.some(row => row[1] === email); // Cột B là Email
+        if (!emailExists) {
+          // Thêm dòng mới
+          await sheets.spreadsheets.values.append({
+            spreadsheetId: GOOGLE_SHEET_ID,
+            range: 'A:D',
+            valueInputOption: 'RAW',
+            resource: {
+              values: [[
+                escapeHtml(name),
+                email,
+                escapeHtml(phone),
+                new Date().toISOString()
+              ]],
+            },
+          });
+        }
       }
     } catch (e) {
       // Không chặn đăng ký nếu chỉ lỗi ghi log
-      console.error('SAVE SUBSCRIBER ERROR:', e);
+      console.error('SAVE SUBSCRIBER TO SHEETS ERROR:', e);
     }
 
     // Gọi webhook lưu lead (tuỳ chọn)

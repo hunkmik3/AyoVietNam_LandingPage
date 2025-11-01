@@ -111,3 +111,31 @@ LEADS_WEBHOOK_URL=https://your-webhook-url (optional)
 - `LEADS_WEBHOOK_URL` tuỳ chọn nếu có webhook nhận thông tin đăng ký (convert lead)
 
 > Nếu không nhận được mail, kiểm tra lại key SMTP và email, hoặc thử gửi test ở https://www.smtper.net/ để kiểm tra cấu hình Brevo còn hoạt động.
+
+---
+
+## 📊 Cấu hình Google Sheets để lưu subscribers (Bắt buộc cho production)
+
+Để lưu danh sách subscribers bền vững và hiển thị trên trang admin, bạn cần tích hợp Google Sheets:
+
+### 1. Tạo Google Sheet
+- Tạo một Google Sheet mới với header: `Name`, `Email`, `Phone`, `CreatedAt`
+- Copy **Sheet ID** từ URL: `https://docs.google.com/spreadsheets/d/[SHEET_ID]/edit`
+
+### 2. Tạo Service Account trên Google Cloud
+- Vào [Google Cloud Console](https://console.cloud.google.com/)
+- Tạo Service Account và tải file JSON credentials
+- Share Google Sheet cho email Service Account với quyền **Editor**
+
+### 3. Thêm biến môi trường trên Vercel
+
+Thêm 2 biến môi trường mới:
+```
+GOOGLE_SHEET_ID=your-sheet-id-here
+GOOGLE_SERVICE_ACCOUNT={"type":"service_account",...} (toàn bộ nội dung file JSON)
+```
+
+- `GOOGLE_SHEET_ID`: ID của Google Sheet (lấy từ URL)
+- `GOOGLE_SERVICE_ACCOUNT`: Toàn bộ nội dung file JSON credentials (copy-paste nguyên văn)
+
+> **Lưu ý bảo mật:** Không commit file JSON credentials lên GitHub!
